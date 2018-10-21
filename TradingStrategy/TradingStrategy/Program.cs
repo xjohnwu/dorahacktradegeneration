@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Bitfinex.Net;
 using Bitfinex.Net.Objects;
 using CsvHelper;
 
@@ -12,13 +11,11 @@ namespace TradingStrategy
     {
         static void Main(string[] args)
         {
-            var client = new BitfinexClient();
-            var candles = client.GetCandles(TimeFrame.OneDay, "tBTCUSD", startTime: new DateTime(2017, 8, 1),
-                endTime: new DateTime(2018, 10, 21), sorting: Sorting.OldFirst, limit: 1000).Data;
+            var candles = GetData();
 
             var strategy = new BTCARMeanReversion();
             Trade trade = null;
-            var date = new DateTime(2017, 9, 1);
+            var date = new DateTime(2017, 9, 5, 0, 0, 0, DateTimeKind.Utc);
             var trades = new List<Trade>();
             while (date < DateTime.Today)
             {
@@ -29,17 +26,22 @@ namespace TradingStrategy
                         OpenTime = date,
                         OpenPrice = candles.Single(c => c.Timestamp == date).Close
                     };
+                    var nextDate = date.AddDays(1);
+                    date = new DateTime(nextDate.Year, nextDate.Month, nextDate.Day, 0, 0, 0, DateTimeKind.Utc);
                 }
                 else if (trade != null && trade.CloseTime == default(DateTime) &&
-                         strategy.GenerateCloseTradeSignal(candles, date))
+                         strategy.GenerateCloseTradeSignal(candles, date, trade))
                 {
                     trade.CloseTime = date;
                     trade.ClosePrice = candles.Single(c => c.Timestamp == date).Close;
                     trades.Add(trade);
                     trade = null;
-                }
 
-                date = date.AddDays(1);
+                    var nextDate = date.AddDays(1);
+                    date = new DateTime(nextDate.Year, nextDate.Month, nextDate.Day, 0, 0, 0, DateTimeKind.Utc);
+                }
+                else
+                    date = date.AddHours(1);
             }
 
             using (var sw = new StreamWriter(@"C:\Code\GitHub\dorahacktradegeneration\data\BTCUSDARMeanReversion.csv"))
@@ -49,12 +51,41 @@ namespace TradingStrategy
             }
         }
 
-        public class Trade
+        public static IList<BitfinexCandle> GetData()
         {
-            public DateTime OpenTime { get; set; }
-            public decimal OpenPrice { get; set; }
-            public DateTime CloseTime { get; set; }
-            public decimal ClosePrice { get; set; }
+            var list = new List<BitfinexCandle>();
+            foreach (var file in Directory.GetFiles(@"C:\Code\GitHub\dorahacktradegeneration\data", "BTCUSD_??????.csv"))
+            {
+                using (var sr = new StreamReader(file))
+                using (var csvReader = new CsvReader(sr))
+                {
+                    list.AddRange(csvReader.GetRecords<BitfinexCandle>());
+                }
+            }
+
+            list = list.Distinct(new TimeRelationalComparer()).ToList();
+            list.Sort(new TimeRelationalComparer());
+            return list;
+        }
+        private sealed class TimeRelationalComparer : IComparer<BitfinexCandle>, IEqualityComparer<BitfinexCandle>
+        {
+            public int Compare(BitfinexCandle x, BitfinexCandle y)
+            {
+                if (ReferenceEquals(x, y)) return 0;
+                if (ReferenceEquals(null, y)) return 1;
+                if (ReferenceEquals(null, x)) return -1;
+                return x.Timestamp.CompareTo(y.Timestamp);
+            }
+
+            public bool Equals(BitfinexCandle x, BitfinexCandle y)
+            {
+                return x.Timestamp.Equals(y.Timestamp);
+            }
+
+            public int GetHashCode(BitfinexCandle obj)
+            {
+                return obj.Timestamp.GetHashCode();
+            }
         }
     }
 }

@@ -22,7 +22,7 @@ namespace TradingStrategy
             return tradeSignal;
         }
 
-        public bool GenerateCloseTradeSignal(IList<BitfinexCandle> data, DateTime now)
+        public bool GenerateCloseTradeSignal(IList<BitfinexCandle> data, DateTime now, Trade trade)
         {
             var indicator1 = new ADTM();
             var indicator2 = new RSI();
@@ -32,7 +32,25 @@ namespace TradingStrategy
             var adtm = indicator1.Fit(appliedData, 14);
             var rsi = indicator2.Fit(appliedData, 5);
 
+            var loss = CalculateLoss(data.Last().Close, trade.OpenPrice);
+
+            if (loss >= 0.03)
+            {
+                return true;
+            }
+
             return adtm > -0.4m || adtm < -0.7m || rsi > 0.32m;
         }
+
+        public static double CalculateLoss(decimal marketPrice, decimal longSignalPrice)
+        {
+            return -Math.Log(Convert.ToDouble(marketPrice / longSignalPrice));
+        }
+
+        public static double CalculateProfit(decimal marketPrice, decimal longSignalPrice)
+        {
+            return Math.Log(Convert.ToDouble(marketPrice / longSignalPrice));
+        }
+
     }
 }
