@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2016
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RedditPost", "RedditPost\RedditPost.csproj", "{9FD979AA-0797-4FC5-8202-DFC7871F370E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsComprehend", "AwsComprehend\AwsComprehend.csproj", "{853EC6D3-F666-4601-AB56-8704013AF187}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9FD979AA-0797-4FC5-8202-DFC7871F370E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9FD979AA-0797-4FC5-8202-DFC7871F370E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9FD979AA-0797-4FC5-8202-DFC7871F370E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9FD979AA-0797-4FC5-8202-DFC7871F370E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{853EC6D3-F666-4601-AB56-8704013AF187}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{853EC6D3-F666-4601-AB56-8704013AF187}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{853EC6D3-F666-4601-AB56-8704013AF187}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{853EC6D3-F666-4601-AB56-8704013AF187}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {538F4020-7F80-4A6A-B159-0581F07178A2}
+	EndGlobalSection
+EndGlobal
