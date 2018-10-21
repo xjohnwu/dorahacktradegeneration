@@ -50,13 +50,23 @@ from sklearn.metrics import precision_score
 data = pd.read_csv('BTCUSDARMeanReversion.csv')
 
 
+
+sentiment = pd.read_csv('ratios.csv')
+sentiment = sentiment.loc[:, ['Positive', 'Negative', 'Count']]
+
+
 Y_num = data['Position']
 Y = np.where(Y_num < 1, 1, 0)
 
 print(Y)
 
-X = data.drop(['Position', 'OpenTime', 'CloseTime'], axis=1)
+X = data.drop(['Position', 'OpenTime', 'CloseTime', 'ClosePrice', 'PnL'], axis=1)
+X['Positive'] = sentiment['Positive']
+X['Negative'] = sentiment['Negative']
+X['Count'] = sentiment['Count']
 
+
+print(X)
 
 sampl = 30
 X_train = X[:-sampl]
@@ -92,8 +102,6 @@ print(recall_score(y_test, y_test_pred))
 
 print(y_test, y_test_pred, Y_num[-sampl:])
 
-
-
 data['Prediction'] = model.predict(X)
 
-data.to_csv('prediction.csv')
+data.to_csv('prediction_2.csv')
