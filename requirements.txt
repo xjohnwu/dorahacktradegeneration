@@ -5,7 +5,7 @@ idna==2.7
 kiwisolver==1.0.1
 matplotlib==3.0.0
 nlpk==0.0.6
-nltk==3.3
+nltk==3.4.5
 numpy==1.15.2
 oauthlib==2.1.0
 pandas==0.23.4
